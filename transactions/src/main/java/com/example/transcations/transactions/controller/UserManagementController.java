@@ -1,16 +1,10 @@
 package com.example.transcations.transactions.controller;
 
-import java.security.Timestamp;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.UUID;
-
-import javax.servlet.http.HttpSession;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.mail.SimpleMailMessage;
-import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -33,6 +27,8 @@ import com.example.transcations.transactions.model.dto.UserDTO;
 import com.example.transcations.transactions.repository.RoleRepository;
 import com.example.transcations.transactions.repository.UserLoginRepository;
 import com.example.transcations.transactions.repository.UserRepository;
+import com.example.transcations.transactions.utils.EmailConfirmation;
+import com.example.transcations.transactions.utils.GeneratePassword;
 
 @Controller
 @RequestMapping("user-management")
@@ -41,18 +37,17 @@ public class UserManagementController {
     private PasswordEncoder passwordEncoder;
     private RoleRepository roleRepository;
     private UserLoginRepository userLoginRepository;
-    private JavaMailSender javaMailSender;
+    private EmailConfirmation emailConfirmation;
 
     @Autowired
     public UserManagementController(UserRepository userRepository, PasswordEncoder passwordEncoder,
-            RoleRepository roleRepository, UserLoginRepository userLoginRepository, JavaMailSender javaMailSender,
-            HttpSession httpSession) {
+            RoleRepository roleRepository, UserLoginRepository userLoginRepository,
+            EmailConfirmation emailConfirmation) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
         this.roleRepository = roleRepository;
         this.userLoginRepository = userLoginRepository;
-        this.javaMailSender = javaMailSender;
-        // this.httpSession = httpSession;
+        this.emailConfirmation = emailConfirmation;
     }
 
     // LOGIN PROCCESS
@@ -72,7 +67,8 @@ public class UserManagementController {
                         "",
                         getAuthorities(user.getRole()));
                 PreAuthenticatedAuthenticationToken authenticationToken = new PreAuthenticatedAuthenticationToken(
-                        user,
+                        // user,
+                        user.getEmail(),
                         "",
                         userDetails.getAuthorities());
                 SecurityContextHolder.getContext().setAuthentication(authenticationToken);
@@ -109,7 +105,7 @@ public class UserManagementController {
             userLogin.setPassword(passwordEncoder.encode(registerDTO.getPassword()));
             userLogin.setRole(roleRepository.getLevel1());
             userLoginRepository.save(userLogin);
-            registrationEmail("registration", registerDTO.getEmail());
+            emailConfirmation.confirmation("registration", registerDTO.getEmail(), "");
         }
 
         return "redirect:/user-management/login";
@@ -126,12 +122,12 @@ public class UserManagementController {
     public String resetPassword(@RequestParam("email") String email) {
         UserDTO user = userRepository.getUsingDTO(email);
         if (user != null) {
-            String newPassword = UUID.randomUUID().toString();
+            String newPassword = GeneratePassword.randomPassword(20);
 
             UserLogin userLogin = userLoginRepository.get(user.getId());
             userLogin.setPassword(passwordEncoder.encode(newPassword));
             userLoginRepository.save(userLogin);
-            registrationEmail("reset", user.getEmail());
+            emailConfirmation.confirmation("reset", user.getEmail(), newPassword);
         }
 
         return "redirect:/user-management/login";
@@ -145,17 +141,16 @@ public class UserManagementController {
     }
 
     @PostMapping("change-password")
-    public String confirmationPassword(RedirectAttributes redirectAttributes, HttpSession httpSession,
+    public String confirmationPassword(RedirectAttributes redirectAttributes,
             ChangePasswordDTO changePasswordDTO) {
-        UserDTO user = userRepository.getUsingDTO(httpSession.getAttribute("email").toString());
+        UserDTO user = userRepository.getUsingDTO(SecurityContextHolder.getContext().getAuthentication().getName());
         if (user != null && passwordEncoder.matches(changePasswordDTO.getOldPassword(), user.getPassword())
                 && changePasswordDTO.getPassword().equals(changePasswordDTO.getConfirmationPassword())) {
             UserLogin userLogin = userLoginRepository.findById(user.getId()).get();
-            httpSession.setAttribute("password", changePasswordDTO.getPassword());
 
             userLogin.setPassword(passwordEncoder.encode(changePasswordDTO.getPassword()));
             userLoginRepository.save(userLogin);
-            registrationEmail("change", user.getEmail());
+            emailConfirmation.confirmation("change", user.getEmail(), changePasswordDTO.getPassword());
         } else {
             if (!changePasswordDTO.getPassword().equals(changePasswordDTO.getConfirmationPassword())) {
                 redirectAttributes.addFlashAttribute("errorMessage", "Password and confirm Password is not match.");
@@ -173,28 +168,5 @@ public class UserManagementController {
         final List<SimpleGrantedAuthority> authorities = new LinkedList<>();
         authorities.add(new SimpleGrantedAuthority(role));
         return authorities;
-    }
-
-    // ADDITION METHOD FOR SEND TO EMAIL AFTER REGISTRATION
-    private void registrationEmail(String type, String email) {
-        SimpleMailMessage message = new SimpleMailMessage();
-
-        UserDTO user = userRepository.getUsingDTO(email);
-        message.setTo(email);
-        if (type.equalsIgnoreCase("registration")) {
-            message.setSubject("Registration Successfull" + Timestamp.class);
-            message.setText("Hi, " + user.getNickname() + "\nRegistration was successfull!");
-        } else {
-            message.setSubject(type + " Password Successfull");
-            String text = "Hi, " + user.getNickname() + "\n" + type
-                    + " password was successfull!\nHere is your new password : ";
-            // + httpSession.getAttribute("password");
-            if (type.equalsIgnoreCase("reset")) {
-                text += "\nChange your password immidiately from Profile Page.";
-            }
-            message.setText(text);
-
-        }
-        javaMailSender.send(message);
     }
 }
