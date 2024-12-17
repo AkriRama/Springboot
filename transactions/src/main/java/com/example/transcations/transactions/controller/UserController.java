@@ -1,6 +1,7 @@
 package com.example.transcations.transactions.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -28,8 +29,8 @@ public class UserController {
 
     @GetMapping
     public String index(Model model) {
-        // UserDTO userDTO = userRepository.getUsingDTO();
-        // model.addAttribute("user", userDTO);
+        UserDTO userDTO = userRepository.getUsingDTO(SecurityContextHolder.getContext().getAuthentication().getName());
+        model.addAttribute("user", userDTO);
         return "user/profile";
     }
 
