@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>USER PROFILE | 29</title>
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    </head>
+    <body>
+        <div class="container vh-100 d-flex align-items-center justify-content-center">
+            <div class="card shadow-lg p-4" style="width: 30rem;">
+                <div class="card-body">
+                    <h3 class="card-title text-center mb-4">User Profile</h3>
+                    <form th:action="@{/user/save/}" th:object="${user}" method="post">
+                        <div class="mb-3">
+                            <label for="id" class="form-label">User ID</label>
+                            <input id="id" 
+                                   th:placeholder="${user.id}" 
+                                   type="text" 
+                                   th:field="*{id}" 
+                                   class="form-control" 
+                                   disabled>
+                        </div>
+                        <div class="mb-3">
+                            <label for="nickname" class="form-label">Nickname</label>
+                            <input id="nickname" 
+                                   th:placeholder="${user.nickname}" 
+                                   type="text" 
+                                   th:field="*{nickname}" 
+                                   class="form-control" 
+                                   disabled>
+                        </div>
+                        <div class="mb-3">
+                            <label for="fullname" class="form-label">Full Name</label>
+                            <input id="fullname" 
+                                   th:placeholder="${user.fullname}" 
+                                   type="text" 
+                                   th:field="*{fullname}" 
+                                   class="form-control" 
+                                   disabled>
+                        </div>
+                        <div class="mb-3">
+                            <label for="role" class="form-label">Role</label>
+                            <input id="role" 
+                                   th:placeholder="${user.role}" 
+                                   type="text" 
+                                   th:field="*{role}" 
+                                   class="form-control" 
+                                   disabled>
+                        </div>
+                        <div class="d-grid gap-2">
+                            <button type="submit" class="btn btn-primary" hidden>Submit</button>
+                        </div>
+                    </form>
+                    <div class="mt-3 text-center">
+                        <a th:href="@{/user-management/change}" class="btn btn-link">Change Password</a>
+                    </div>
+                    <div class="mt-3 text-center">
+                        <a th:href="@{/user-management/logout}" class="btn btn-danger">Logout</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    </body>
+</html>

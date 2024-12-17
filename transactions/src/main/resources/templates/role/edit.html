@@ -1,0 +1,12 @@
+<html>
+    <head>
+        <title>Role Edit | 29</title>
+    </head>
+    <body>
+        <form th:action="@{/role/edit/{id}(id = ${role.id})}" th:object="${role}" method="post">
+            <input id="id" th:placeholder="${role.id}" type="text" th:field="*{id}" disabled>
+            <input id="name" th:placeholder="${role.name}" type="text" th:field="*{name}">
+            <button type="submit">Submit</button>
+        </form>
+    </body>
+</html>

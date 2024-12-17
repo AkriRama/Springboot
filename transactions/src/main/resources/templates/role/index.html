@@ -1,0 +1,58 @@
+<html>
+    <head>
+        <title>Role Management | 29</title>
+    </head>
+    <body>
+        <table>
+            <a th:href="@{role/form}">Create New</a>
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>NAME</th>
+                    <th>ACTION</th>
+                </tr>
+            </thead>
+            <tbody>
+                <!-- <tr>
+                    <td>1</td>
+                    <td>Admin</td>
+                    <td>EDIT | DELETE</td>
+                </tr>
+                <tr>
+                    <td>2</td>
+                    <td>Member</td>
+                    <td>EDIT | DELETE</td>
+                </tr>
+                <tr>
+                    <td>3</td>
+                    <td>Non-Member</td>
+                    <td>EDIT | DELETE</td>
+                </tr> -->
+                
+                <tr th:each="role : ${roles}">
+                    <td th:text="${role.id}"></td>
+                    <td th:text="${role.name}"></td>
+                    <!-- <td> EDIT | <a th:href="@{/role/delete/${role.id}}">DELETE</a> </td> -->
+                    <td>
+                        <div style="display: flex; gap: 10px;" >
+
+                            <a th:href="@{role/form/edit/{id}(id = ${role.id})}">EDIT</a> 
+                            |
+                            <!-- <a th:href="@{/role/delete/{id}(id = ${role.id})}" >DELETE</a> -->
+                            <form th:action="@{/role/delete/{id}(id = ${role.id})}" th:object="${role}" method="post" style="margin: 0;">
+                                 <button type="submit" style="
+                                 padding: 0;
+                                 border: none;
+                                 font: inherit;
+                                 text-decoration: underline;
+                                 cursor: pointer;
+                                 background: none;
+                                 color: blue;">DELETE</button>
+                            </form>
+                        </div>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </body>
+</html>

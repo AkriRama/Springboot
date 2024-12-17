@@ -1,0 +1,17 @@
+<html>
+    <head>
+        <title>User Form | 29</title>
+    </head>
+    <body>
+        <form th:action="@{/user/save}" th:object="${user}" method="post">
+            <input id="id" th:placeholder="${user.id}" type="text" th:field="*{id}" disabled>
+            <input id="name" placeholder="Name" type="text" th:field="*{name}">
+            <input id="address" placeholder="Address" type="text" th:field="*{address}">
+            <input id="telephone" placeholder="Telephone" type="text" th:field="*{telephone}">
+            <select name="role-dropdown" id="role-dropdownId" th:field="*{role}">
+                 <option th:each="role : ${roles}" th:value="${role.id}" th:text="${role.name}"></option>
+            </select>
+            <button type="submit">Submit</button>
+        </form>
+    </body>
+</html>

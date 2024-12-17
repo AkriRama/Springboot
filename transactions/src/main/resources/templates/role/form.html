@@ -1,0 +1,17 @@
+<html>
+    <head>
+        <title>Role Form | 29</title>
+    </head>
+    <body>
+        <form th:action="@{/role/save}" th:object="${role}" method="post">
+            <!-- ID -->
+            <input id="id" th:placeholder="${role.id}" type="text" th:field="*{id}" disabled>
+            <!-- ini akan bermasalah ketika ada foreign key -->
+            <!-- <input id="id" placeholder="ID" type="text" th:field="*{id}"> -->
+            <!-- NAME -->
+            <input id="name" placeholder="NAME" type="text" th:field="${role.name}">
+            <!-- SUBMIT BUTTON -->
+             <button type="submit">Submit</button>
+        </form>
+    </body>
+</html>
