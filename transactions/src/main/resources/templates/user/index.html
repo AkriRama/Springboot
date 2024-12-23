@@ -56,7 +56,7 @@
                     <div class="mb-2">
                         <label for="id" class="form-label">ID</label>
                         <div>
-                            <input id="fullname" th:placeholder="${userDTO.fullname}" type="text" class="form-control">
+                            <input id="fullname" placeholder="Fullname" type="text" class="form-control">
                         </div>
                     </div>
                     
@@ -107,30 +107,40 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
     <script src="https://cdn.jsdelivr.net/npm/summernote@0.9.0/dist/summernote.min.js"></script>
     <script src="https://cdn.datatables.net/2.1.8/js/dataTables.min.js"></script>
-
+    
     
     <script>
         $(document).ready(function() {
             $('#summernote').summernote();
         });
-        </script>
-        <script>
-            $(document).ready( function () {
-                $("#dataTable").DataTable({
-                    lengthMenu: [5, 10, 20, 30],
-                    pageLength: 10,
-                    responsive: true,
-                    columnDefs: [
-                        {
-                            targets: 3,
-                            render: function(data, type, row) {
-                                return '<b>' + data + '</b>'; 
-                            }
-                        }
-                    ]
-                    
-                });
-            })
-        </script>
+    </script>
+    <script>
+        $(document).ready( function () {
+            $("#dataTable").DataTable({
+                ajax: {
+                    url: "http://localhost:8080/api/user/",
+                    type: "GET",
+                    dataSrc: "data"
+                },
+                columns: [
+                    {data: "id", title: "ID"},
+                    {data: "fullname", title: "Fullname"},
+                    {data: "nickname", title: "Nicname"},
+                    {data: "email", title: "Email"},
+                    {data: "role", title: "Role"}, 
+                ],
+                columnDefs: [
+                    {
+                        targets: [0],
+                        visible: false
+                    }
+                ]
+            });
+        })
+    </script>
+
+    
+
+
       
 </html>
