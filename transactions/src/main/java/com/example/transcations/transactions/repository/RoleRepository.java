@@ -11,10 +11,6 @@ import com.example.transcations.transactions.model.Role;
 
 @Repository
 public interface RoleRepository extends JpaRepository<Role, Integer> {
-    // @Query(value = "SELECT COUNT(*) FROM tb_role", nativeQuery = true)
-    // public long count();
-
-    // @Query(value = "SELECT id, name FROM tb_role", nativeQuery = true)
     @Query(value = "SELECT id, name, level FROM tb_roles", nativeQuery = true)
     public List<Role> get();
 
@@ -23,7 +19,4 @@ public interface RoleRepository extends JpaRepository<Role, Integer> {
 
     @Query(value = "SELECT * FROM tb_roles  WHERE id = ?", nativeQuery = true)
     public Role getLevelById(@Param(value = "id") Integer id);
-
-    // @Query("SELECT r.id, r.name, r.level, ul FROM UserLogin ul JOIN ul.role r")
-    // public List<Role> get();
 }
